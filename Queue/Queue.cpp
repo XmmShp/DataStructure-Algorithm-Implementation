@@ -9,13 +9,26 @@ class Queue
 
 public:
     Queue() : _head(nullptr), _tail(nullptr) {}
+    ~Queue()
+    {
+        while (!Empty())
+            Pop();
+        _head = _tail = nullptr;
+    }
     T Front()
     {
         if (_head == nullptr)
             throw "Empty Queue!";
         return _head->Val;
     }
-    void Pop() { _head == nullptr ? throw "Empty Queue!" : _head = _head->Next; }
+    void Pop()
+    {
+        if (_head == nullptr)
+            throw "Empty Queue!";
+        QueueNode *tmp = _head;
+        _head = _head->Next;
+        delete tmp;
+    }
     void Push(T val)
     {
         if (_tail == nullptr)
