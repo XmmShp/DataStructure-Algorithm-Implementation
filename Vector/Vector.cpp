@@ -1,52 +1,72 @@
 #include <cstring>
 template <typename T>
+class Vector
+{
+private:
+    static const int PAGESIZE = 100;
 
-class Vector {
 public:
-  explicit Vector(int size, T init = T(0)) {
-    if (_size > _cap)
-      _cap = (1 + _size % 100) * 100;
-    _vec = new T[_cap];
-    for (int i = 0; i < size; i++)
-      _vec[i] = init;
-    _size = size;
-  }
-
-  ~Vector() { delete[] _vec; }
-
-  void PushBack(T val) {
-    if (++_size > _cap) {
-      _cap *= 2;
-      T *_tmp = new T[_cap];
-      memcpy(_tmp, _vec, _size - 1);
-      delete[] _vec;
-      _vec = _tmp;
+    Vector() : Vector(0){};
+    explicit Vector(size_t size, T init = T()) : _capacity(PAGESIZE), _size(size)
+    {
+        if (_size > _capacity)
+            _capacity = (1 + _size % PAGESIZE) * PAGESIZE;
+        _vec = new T[_capacity];
+        for (size_t i = 0; i < size; i++)
+            _vec[i] = init;
     }
-    *_vec[_size - 1] = val;
-  }
-  T PopBack() {
-    if (_size == 0)
-      throw "size is zero.";
-    return _vec[--_size];
-  }
-  T &operator[](int index) {
-    if (index >= _size)
-      throw "index error!";
-    return _vec[index];
-  }
+
+    ~Vector() { delete[] _vec; }
+
+    void PushBack(T val)
+    {
+        if (++_size > _capacity)
+        {
+            _capacity *= 2;
+            T *_tmp = new T[_capacity];
+            memcpy(_tmp, _vec, sizeof(T) * (_size - 1));
+            delete[] _vec;
+            _vec = _tmp;
+        }
+        _vec[_size - 1] = val;
+    }
+    void PopBack()
+    {
+        if (_size == 0)
+            throw "Vector is empty.";
+        --_size;
+    }
+    int Size()
+    {
+        return _size;
+    }
+    bool Empty()
+    {
+        return _size == 0;
+    }
+    T &operator[](size_t index)
+    {
+        if (index >= _size)
+            throw "index error!";
+        return _vec[index];
+    }
 
 private:
-  T *_vec;
-  int _cap = 100;
-  int _size;
+    T *_vec;
+    size_t _capacity;
+    size_t _size;
 };
 
+/*
+Test Region
+*/
 #include <cstdio>
-
-int main() {
-  Vector<int> vec(10, 1);
-  for (int i = 0; i < 10; i++)
-    printf("%d ", vec[i]);
-  printf("\n");
-  return 0;
+int main()
+{
+    Vector<int> vec;
+    for (int i = 0; i < 1024; i++)
+        vec.PushBack(i);
+    for (int i = 0; i < 1024; i++)
+        printf("%d ", vec[i]);
+    return 0;
 }
