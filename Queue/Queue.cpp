@@ -1,12 +1,6 @@
 template <typename T>
 class Queue
 {
-    struct QueueNode
-    {
-        T Val;
-        QueueNode *Next;
-    };
-
 public:
     Queue() : _head(nullptr), _tail(nullptr) {}
     ~Queue()
@@ -42,6 +36,11 @@ public:
     bool Empty() { return _head == nullptr; }
 
 private:
+    struct QueueNode
+    {
+        T Val;
+        QueueNode *Next;
+    };
     QueueNode *_head, *_tail;
 };
 
