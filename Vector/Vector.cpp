@@ -2,10 +2,10 @@
 template <typename T>
 class Vector
 {
-private:
+  private:
     static const int PAGESIZE = 100;
 
-public:
+  public:
     Vector() : Vector(0){};
     explicit Vector(size_t size, T init = T()) : _capacity(PAGESIZE), _size(size)
     {
@@ -16,7 +16,10 @@ public:
             _vec[i] = init;
     }
 
-    ~Vector() { delete[] _vec; }
+    ~Vector()
+    {
+        delete[] _vec;
+    }
 
     void PushBack(T val)
     {
@@ -51,7 +54,7 @@ public:
         return _vec[index];
     }
 
-private:
+  private:
     T *_vec;
     size_t _capacity;
     size_t _size;

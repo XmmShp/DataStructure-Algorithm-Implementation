@@ -1,8 +1,10 @@
 template <typename T>
 class Queue
 {
-public:
-    Queue() : _head(nullptr), _tail(nullptr) {}
+  public:
+    Queue() : _head(nullptr), _tail(nullptr)
+    {
+    }
     ~Queue()
     {
         while (!Empty())
@@ -33,9 +35,12 @@ public:
         _tail->Next = new QueueNode{val, nullptr};
         _tail = _tail->Next;
     }
-    bool Empty() { return _head == nullptr; }
+    bool Empty()
+    {
+        return _head == nullptr;
+    }
 
-private:
+  private:
     struct QueueNode
     {
         T Val;
