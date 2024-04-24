@@ -1,5 +1,4 @@
-BasedOnStyle: LLVM
+BasedOnStyle: Microsoft
 IndentWidth: 4
 Language: Cpp
-DerivePointerAlignment: false
-PointerAlignment: Left
+AlwaysBreakTemplateDeclarations: Yes
