@@ -10,7 +10,7 @@ class Vector
     explicit Vector(size_t size, T init = T()) : _capacity(PAGESIZE), _size(size)
     {
         if (_size > _capacity)
-            _capacity = (1 + _size % PAGESIZE) * PAGESIZE;
+            _capacity = (1 + _size / PAGESIZE) * PAGESIZE;
         _vec = new T[_capacity];
         for (size_t i = 0; i < size; i++)
             _vec[i] = init;
