@@ -1,26 +1,29 @@
 #include <cstdio>
+#include <functional>
 
-template <typename T>
+template <typename T, typename TComparator = std::less<T>>
 class AVLTree
 {
   public:
-    AVLTree() : _root(nullptr)
+    AVLTree() : _root(nullptr), _comparator() {}
+    ~AVLTree()
     {
+        /*
+         * TODO : Implement the destructor
+         */
     }
-    void Insert(T data)
+    void Insert(T data) { _root = Insert(_root, data); }
+    bool Find(T data) { return Find(_root, data); }
+    bool Deleta(T data)
     {
-        _root = InsertInternal(_root, data);
+        /*
+         * TODO : Implement the deletion
+         */
+        return false;
     }
-    bool Find(T data)
-    {
-        return FindInternal(_root, data);
-    }
-    void Print()
-    {
-        PrintInternal(_root);
-    }
+    void Print() { Print(_root); }
 
-  private:
+  protected:
     struct Node
     {
         T Data;
@@ -28,70 +31,52 @@ class AVLTree
         Node *Right;
         int Height;
 
-        Node(T data) : Data(data), Left(nullptr), Right(nullptr), Height(1)
-        {
-        }
+        Node(T data) : Data(data), Left(nullptr), Right(nullptr), Height(1) {}
     };
 
     Node *_root;
+    TComparator _comparator;
 
-    Node *InsertInternal(Node *node, T data)
+    Node *Insert(Node *node, T data)
     {
-        if (node == nullptr)
-        {
-            return new Node(data);
-        }
-        if (data < node->Data)
-            node->Left = InsertInternal(node->Left, data);
-        else
-            node->Right = InsertInternal(node->Right, data);
+        if (node == nullptr) { return new Node(data); }
+        if (_comparator(data, node->Data)) { node->Left = Insert(node->Left, data); }
+        else { node->Right = Insert(node->Right, data); }
         node->Height = 1 + Max(GetHeight(node->Left), GetHeight(node->Right));
         int balance = GetBalance(node);
-        if (balance > 1 && data < node->Left->Data) // Left Left
-            return RightRotate(node);
-        if (balance < -1 && data > node->Right->Data) // Right Right
-            return LeftRotate(node);
-        if (balance > 1 && data > node->Left->Data) // Left Right
-        {
-            node->Left = LeftRotate(node->Left);
-            return RightRotate(node);
-        }
-        if (balance < -1 && data < node->Right->Data) // Right Left
+        // Left Left
+        if (balance > 1 && _comparator(data, node->Left->Data)) { return RightRotate(node); }
+        // Right Left
+        if (balance < -1 && _comparator(data, node->Right->Data))
         {
             node->Right = RightRotate(node->Right);
             return LeftRotate(node);
         }
+
+        // Right Right
+        if (balance < -1 && !_comparator(data, node->Right->Data)) { return LeftRotate(node); }
+        // Left Right
+        if (balance > 1 && !_comparator(data, node->Left->Data))
+        {
+            node->Left = LeftRotate(node->Left);
+            return RightRotate(node);
+        }
         return node;
     }
-    void PrintInternal(Node *node)
+    void Print(Node *node)
     {
-        if (node == nullptr)
-        {
-            return;
-        }
+        if (node == nullptr) { return; }
 
-        PrintInternal(node->Left);
+        Print(node->Left);
         printf("%d ", node->Data);
-        PrintInternal(node->Right);
+        Print(node->Right);
     }
-    bool FindInternal(Node *node, T data)
+    bool Find(Node *node, T data)
     {
-        if (node == nullptr)
-        {
-            return false;
-        }
-        if (!(node->Data < data) && !(data < node->Data))
-        {
-            return true;
-        }
-        if (node->Data > data)
-        {
-            return FindInternal(node->Left, data);
-        }
-        else
-        {
-            return FindInternal(node->Right, data);
-        }
+        if (node == nullptr) { return false; }
+        if (!_comparator(data, node->Data) && !_comparator(node->Data, data)) { return true; }
+        if (_comparator(data, node->Data)) { return Find(node->Left, data); }
+        else { return Find(node->Right, data); }
     }
 
     Node *LeftRotate(Node *node)
@@ -108,24 +93,15 @@ class AVLTree
         temp->Right = node;
         return temp;
     }
-    int Max(int x, int y)
-    {
-        return x < y ? x : y;
-    }
+    int Max(int x, int y) { return x < y ? x : y; }
     int GetBalance(Node *node)
     {
-        if (node == nullptr)
-        {
-            return 0;
-        }
+        if (node == nullptr) { return 0; }
         return GetHeight(node->Left) - GetHeight(node->Right);
     }
     int GetHeight(Node *node)
     {
-        if (node == nullptr)
-        {
-            return 0;
-        }
+        if (node == nullptr) { return 0; }
         return node->Height;
     }
 };
@@ -136,10 +112,8 @@ Test Region
 int main()
 {
     AVLTree<int> tree;
-    for (int i = 1; i <= 1024; i++)
-    {
-        tree.Insert(i);
-    }
+    for (int i = 1; i <= 1024; i++) { tree.Insert(i); }
+    for (int i = 1024; i >= 1; --i) { tree.Insert(i); }
     tree.Print();
     printf("\n%d", tree.Find(512));
     return 0;
